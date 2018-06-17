@@ -81,7 +81,7 @@ public class SearchServiceClient implements SearchService {
     @Override
     public List<String> search(final String query) {
         final Request request = new Request.Builder()
-                .url(baseUrl + SEARCH_PATH + "/query=" + query)
+                .url(baseUrl + SEARCH_PATH + "?query=" + query)
                 .header("Content-Type", APPLICATION_JSON)
                 .get()
                 .build();

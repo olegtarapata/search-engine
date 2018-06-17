@@ -4,6 +4,7 @@ import com.search.client.SearchServiceClient;
 import com.search.service.SearchDocument;
 
 import java.util.Scanner;
+import java.util.UUID;
 
 public class SearchServiceCliClient {
 
@@ -37,11 +38,15 @@ public class SearchServiceCliClient {
     }
 
     public void handleInput() {
+        client.search(UUID.randomUUID().toString());
         final Scanner scanner = new Scanner(System.in);
         writeUsage();
         while (true) {
             System.out.print("search-cli> ");
             final String command = scanner.nextLine();
+            if (command.isEmpty()) {
+                continue;
+            }
             if (command.equals("quit")) {
                 return;
             }
