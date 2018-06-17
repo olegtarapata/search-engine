@@ -8,5 +8,5 @@ public interface SearchService {
 
     SearchDocument getDocument(String key);
 
-    List<String> search(String query);
+    List search(String query);
 }
