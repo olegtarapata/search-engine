@@ -4,9 +4,9 @@ import java.util.List;
 
 public interface SearchService {
 
-    void addDocument(String key, String content);
+    void addDocument(SearchDocument document);
 
-    String getDocument(String key);
+    SearchDocument getDocument(String key);
 
     List<String> search(String query);
 }

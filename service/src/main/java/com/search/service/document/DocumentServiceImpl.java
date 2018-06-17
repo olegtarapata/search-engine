@@ -8,8 +8,8 @@ public final class DocumentServiceImpl implements DocumentService {
     private final Map<String, String> storage = new ConcurrentHashMap<>();
 
     @Override
-    public boolean add(final String key, final String document) {
-        final String currentDocument = storage.putIfAbsent(key, document);
+    public boolean add(final String key, final String content) {
+        final String currentDocument = storage.putIfAbsent(key, content);
         return currentDocument == null;
     }
 

@@ -5,11 +5,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.regex.Pattern;
 
-public class ParseServiceSpaceImpl implements ParseService {
+public class ParseServiceSimpleImpl implements ParseService {
 
-    private static final String DELIMITER = " ";
-
-    private static final Pattern PATTERN = Pattern.compile(DELIMITER);
+    private static final Pattern PATTERN = Pattern.compile("[ \\n]+");
 
     @Override
     public List<String> parse(final String document) {

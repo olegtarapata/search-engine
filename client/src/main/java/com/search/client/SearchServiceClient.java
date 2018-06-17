@@ -1,5 +1,6 @@
 package com.search.client;
 
+import com.search.service.SearchDocument;
 import com.search.service.SearchService;
 
 import java.util.List;
@@ -7,12 +8,12 @@ import java.util.List;
 public class SearchServiceClient implements SearchService {
 
     @Override
-    public void addDocument(final String key, final String content) {
+    public void addDocument(final SearchDocument document) {
 
     }
 
     @Override
-    public String getDocument(final String key) {
+    public SearchDocument getDocument(final String key) {
         return null;
     }
 

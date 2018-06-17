@@ -3,7 +3,6 @@ package com.search.service;
 import com.search.service.document.DocumentService;
 import com.search.service.parse.ParseService;
 import com.search.service.token.TokenService;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 
@@ -15,7 +14,6 @@ public class SearchServiceImpl implements SearchService {
 
     private final TokenService tokenService;
 
-    @Autowired
     public SearchServiceImpl(final DocumentService documentService, final ParseService parseService,
                              final TokenService tokenService) {
         this.documentService = documentService;
@@ -24,19 +22,26 @@ public class SearchServiceImpl implements SearchService {
     }
 
     @Override
-    public void addDocument(final String key, final String content) {
-        this.documentService.add(key, content);
-        final List<String> tokens = this.parseService.parse(content);
-        this.tokenService.addDocument(key, tokens);
+    public void addDocument(final SearchDocument document) {
+        System.out.println("Doc key = " + document.getKey());
+        System.out.println("Doc content = " + document.getContent());
+        this.documentService.add(document.getKey(), document.getContent());
+        final List<String> tokens = this.parseService.parse(document.getContent());
+        System.out.println("SearchDocument tokens " + tokens);
+        this.tokenService.addDocument(document.getKey(), tokens);
     }
 
     @Override
-    public String getDocument(final String key) {
-        return this.documentService.get(key);
+    public SearchDocument getDocument(final String key) {
+        return new SearchDocument(key, this.documentService.get(key));
     }
 
     @Override
     public List<String> search(final String query) {
-        return this.tokenService.search(parseService.parse(query));
+        final List<String> queryTokens = parseService.parse(query);
+        System.out.println("Query tokens " + queryTokens);
+        final List<String> searchResult = this.tokenService.search(queryTokens);
+        System.out.println("Search result " + searchResult);
+        return searchResult;
     }
 }

@@ -1,5 +1,6 @@
 package com.search.service.app;
 
+import com.search.service.SearchDocument;
 import com.search.service.SearchService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -21,15 +22,15 @@ public class SearchServiceEndpoint implements SearchService {
         this.searchService = searchService;
     }
 
-    @PostMapping("documents/{key}")
+    @PostMapping("documents")
     @Override
-    public void addDocument(@PathVariable("key") final String key, @RequestBody final String content) {
-        searchService.addDocument(key, content);
+    public void addDocument(@RequestBody final SearchDocument document) {
+        searchService.addDocument(document);
     }
 
     @GetMapping("documents/{key}")
     @Override
-    public String getDocument(@PathVariable("key") final String key) {
+    public SearchDocument getDocument(@PathVariable("key") final String key) {
         return searchService.getDocument(key);
     }
 
