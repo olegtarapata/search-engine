@@ -11,5 +11,11 @@
 
     <artifactId>client</artifactId>
 
-
+    <dependencies>
+        <dependency>
+            <groupId>com.search</groupId>
+            <artifactId>api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+    </dependencies>
 </project>
