@@ -23,25 +23,26 @@ public class SearchServiceImpl implements SearchService {
 
     @Override
     public void addDocument(final SearchDocument document) {
-        System.out.println("Doc key = " + document.getKey());
-        System.out.println("Doc content = " + document.getContent());
-        this.documentService.add(document.getKey(), document.getContent());
+        final boolean result = this.documentService.add(document.getKey(), document.getContent());
+        if (!result) {
+            throw new DocumentAlreadyExistsException(document.getKey());
+        }
         final List<String> tokens = this.parseService.parse(document.getContent());
-        System.out.println("SearchDocument tokens " + tokens);
         this.tokenService.addDocument(document.getKey(), tokens);
     }
 
     @Override
     public SearchDocument getDocument(final String key) {
-        return new SearchDocument(key, this.documentService.get(key));
+        final String content = this.documentService.get(key);
+        if (content == null) {
+            throw new DocumentNotExistException(key);
+        }
+        return new SearchDocument(key, content);
     }
 
     @Override
     public List<String> search(final String query) {
         final List<String> queryTokens = parseService.parse(query);
-        System.out.println("Query tokens " + queryTokens);
-        final List<String> searchResult = this.tokenService.search(queryTokens);
-        System.out.println("Search result " + searchResult);
-        return searchResult;
+        return this.tokenService.search(queryTokens);
     }
 }
