@@ -19,6 +19,9 @@ import okhttp3.Response;
 import java.io.IOException;
 import java.util.List;
 
+/**
+ * {@link SearchService} http client implementation.
+ */
 public class SearchServiceClient implements SearchService {
 
     public static final String APPLICATION_JSON = "application/json";

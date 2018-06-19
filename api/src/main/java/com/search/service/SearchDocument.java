@@ -1,5 +1,8 @@
 package com.search.service;
 
+/**
+ * Search document.
+ */
 public class SearchDocument {
 
     private String key;

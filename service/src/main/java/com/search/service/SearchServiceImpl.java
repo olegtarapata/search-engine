@@ -10,6 +10,9 @@ import org.springframework.util.StringUtils;
 
 import java.util.List;
 
+/**
+ * {@link SearchService} implementation.
+ */
 public class SearchServiceImpl implements SearchService {
 
     static final String DOCUMENT_KEY_IS_EMPTY = "document key is empty";

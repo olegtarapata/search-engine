@@ -12,6 +12,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
+/**
+ * {@link SearchService} http endpoint.
+ */
 @RestController
 @RequestMapping(value = "engine", consumes = "application/json", produces = "application/json")
 public class SearchServiceEndpoint implements SearchService {
