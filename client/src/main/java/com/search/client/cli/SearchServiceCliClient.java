@@ -1,6 +1,8 @@
 package com.search.client.cli;
 
 import com.search.client.SearchServiceClient;
+import com.search.service.DocumentAlreadyExistsException;
+import com.search.service.DocumentNotExistException;
 import com.search.service.SearchDocument;
 
 import java.util.Scanner;
@@ -42,46 +44,50 @@ public class SearchServiceCliClient {
         final Scanner scanner = new Scanner(System.in);
         writeUsage();
         while (true) {
-            System.out.print("search-cli> ");
-            final String command = scanner.nextLine();
-            if (command.isEmpty()) {
-                continue;
-            }
-            if (command.equals("quit")) {
-                return;
-            }
-            if (command.startsWith(GET_PREFIX)) {
-                final String key = command.substring(GET_PREFIX.length()).trim();
-                System.out.println(client.getDocument(key).getContent());
-                continue;
-            }
-            if (command.startsWith(ADD_PREFIX)) {
-                final String keyAndContent = command.substring(ADD_PREFIX.length());
-                final int separationIndex = keyAndContent.indexOf(" ");
-                final String key = keyAndContent.substring(0, separationIndex).trim();
-                final String content = keyAndContent.substring(separationIndex + 1).trim();
-                if (key.isEmpty()) {
-                    System.out.println("key is empty");
+            try {
+                System.out.print("search-cli> ");
+                final String command = scanner.nextLine();
+                if (command.isEmpty()) {
                     continue;
                 }
-                if (content.isEmpty()) {
-                    System.out.println("content is empty");
+                if (command.equals("quit")) {
+                    return;
+                }
+                if (command.startsWith(GET_PREFIX)) {
+                    final String key = command.substring(GET_PREFIX.length()).trim();
+                    System.out.println(client.getDocument(key).getContent());
                     continue;
                 }
-                client.addDocument(new SearchDocument(key, content));
-                continue;
-            }
-            if (command.startsWith(SEARCH_PREFIX)) {
-                final String query = command.substring(SEARCH_PREFIX.length()).trim();
-                if (query.isEmpty()) {
-                    System.out.println("query is empty");
+                if (command.startsWith(ADD_PREFIX)) {
+                    final String keyAndContent = command.substring(ADD_PREFIX.length());
+                    final int separationIndex = keyAndContent.indexOf(" ");
+                    final String key = keyAndContent.substring(0, separationIndex).trim();
+                    final String content = keyAndContent.substring(separationIndex + 1).trim();
+                    if (key.isEmpty()) {
+                        System.out.println("key is empty");
+                        continue;
+                    }
+                    if (content.isEmpty()) {
+                        System.out.println("content is empty");
+                        continue;
+                    }
+                    client.addDocument(new SearchDocument(key, content));
                     continue;
                 }
-                System.out.println(client.search(query));
-                continue;
+                if (command.startsWith(SEARCH_PREFIX)) {
+                    final String query = command.substring(SEARCH_PREFIX.length()).trim();
+                    if (query.isEmpty()) {
+                        System.out.println("query is empty");
+                        continue;
+                    }
+                    System.out.println(client.search(query));
+                    continue;
+                }
+                System.out.println("invalid command");
+                writeUsage();
+            } catch (DocumentAlreadyExistsException | DocumentNotExistException e) {
+                System.out.println(e.getMessage());
             }
-            System.out.println("invalid command");
-            writeUsage();
         }
     }
 

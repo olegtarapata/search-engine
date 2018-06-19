@@ -23,8 +23,6 @@ public final class TokenServiceConcurrentImpl implements TokenService {
 
     @Override
     public List<String> search(final List<String> tokens) {
-        System.out.println("Tokens " + tokens);
-        System.out.println("Tokens to key " + tokenToKeys);
         if (tokens.isEmpty()) {
             return Collections.emptyList();
         }

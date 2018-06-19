@@ -1,10 +1,15 @@
 package com.search.client;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.type.CollectionType;
+import com.search.service.DocumentAlreadyExistsException;
+import com.search.service.DocumentNotExistException;
 import com.search.service.SearchDocument;
 import com.search.service.SearchService;
+import com.search.service.SearchServiceException;
+import com.search.service.SearchServiceIllegalArgumentException;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -18,11 +23,11 @@ public class SearchServiceClient implements SearchService {
 
     public static final String APPLICATION_JSON = "application/json";
 
-    public static final String DOCUMENTS_PATH = "documents";
+    static final String DOCUMENTS_PATH = "/engine/documents";
 
-    public static final String SEARCH_PATH = "search";
+    static final String SEARCH_PATH = "/engine/search";
 
-    private static final String URL_FORMAT = "http://%s:%s/engine/";
+    private static final String URL_FORMAT = "http://%s:%s";
 
     private static final MediaType JSON_MEDIA_TYPE = MediaType.parse(APPLICATION_JSON);
 
@@ -45,18 +50,23 @@ public class SearchServiceClient implements SearchService {
         try {
             documentString = objectMapper.writeValueAsString(document);
         } catch (final JsonProcessingException e) {
-            throw new IllegalArgumentException(e);
+            throw new SearchServiceIllegalArgumentException(e);
         }
         final Request request = new Request.Builder()
                 .url(baseUrl + DOCUMENTS_PATH)
                 .post(RequestBody.create(JSON_MEDIA_TYPE, documentString))
                 .build();
         try (final Response response = client.newCall(request).execute()) {
-            if (!response.isSuccessful()) {
-                throw new SearchServiceClientException(response.body().string(), response.code());
+            handleBadRequestCode(response);
+            if (response.code() == 200) {
+                return;
             }
+            if (response.code() == 409) {
+                throw new DocumentAlreadyExistsException(document.getKey());
+            }
+            throw new SearchServiceClientException(response.body().string(), response.code());
         } catch (final IOException e) {
-            throw new RuntimeException(e);
+            throw new SearchServiceException(e);
         }
     }
 
@@ -68,13 +78,16 @@ public class SearchServiceClient implements SearchService {
                 .get()
                 .build();
         try (final Response response = client.newCall(request).execute()) {
-            if (response.isSuccessful()) {
-                return objectMapper.readValue(response.body().bytes(), SearchDocument.class);
-            } else {
-                throw new SearchServiceClientException(response.body().string(), response.code());
+            handleBadRequestCode(response);
+            if (response.code() == 200) {
+                return objectMapper.readValue(response.body().byteStream(), SearchDocument.class);
             }
+            if (response.code() == 404) {
+                throw new DocumentNotExistException(key);
+            }
+            throw new SearchServiceClientException(response.body().string(), response.code());
         } catch (final IOException e) {
-            throw new RuntimeException(e);
+            throw new SearchServiceException(e);
         }
     }
 
@@ -86,13 +99,20 @@ public class SearchServiceClient implements SearchService {
                 .get()
                 .build();
         try (final Response response = client.newCall(request).execute()) {
-            if (response.isSuccessful()) {
-                return objectMapper.readValue(response.body().bytes(), listOfStrings);
-            } else {
-                throw new SearchServiceClientException(response.body().string(), response.code());
+            handleBadRequestCode(response);
+            if (response.code() == 200) {
+                return objectMapper.readValue(response.body().byteStream(), listOfStrings);
             }
+            throw new SearchServiceClientException(response.body().string(), response.code());
         } catch (final IOException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    private void handleBadRequestCode(final Response response) throws IOException {
+        if (response.code() == 400) {
+            final JsonNode responseJson = objectMapper.readTree(response.body().byteStream());
+            throw new SearchServiceIllegalArgumentException(responseJson.get("message").asText());
         }
     }
 }

@@ -5,4 +5,8 @@ public class SearchServiceIllegalArgumentException extends SearchServiceExceptio
     public SearchServiceIllegalArgumentException(final String message) {
         super(message);
     }
+
+    public SearchServiceIllegalArgumentException(Throwable cause) {
+        super(cause);
+    }
 }

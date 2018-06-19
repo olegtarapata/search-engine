@@ -12,6 +12,12 @@ import java.util.List;
 
 public class SearchServiceImpl implements SearchService {
 
+    static final String DOCUMENT_KEY_IS_EMPTY = "document key is empty";
+
+    static final String DOCUMENT_CONTENT_IS_EMPTY = "document content is empty";
+
+    static final String QUERY_IS_EMPTY = "query is empty";
+
     private final DocumentService documentService;
 
     private final ParseService parseService;
@@ -28,10 +34,10 @@ public class SearchServiceImpl implements SearchService {
     @Override
     public void addDocument(final SearchDocument document) {
         if (!StringUtils.hasText(document.getKey())) {
-            throw new MvcSearchServiceIllegalArgumentException("document key is empty");
+            throw new MvcSearchServiceIllegalArgumentException(DOCUMENT_KEY_IS_EMPTY);
         }
         if (!StringUtils.hasText(document.getContent())) {
-            throw new MvcSearchServiceIllegalArgumentException("document content is empty");
+            throw new MvcSearchServiceIllegalArgumentException(DOCUMENT_CONTENT_IS_EMPTY);
         }
         final boolean result = this.documentService.add(document.getKey(), document.getContent());
         if (!result) {
@@ -53,7 +59,7 @@ public class SearchServiceImpl implements SearchService {
     @Override
     public List<String> search(final String query) {
         if (!StringUtils.hasText(query)) {
-            throw new MvcSearchServiceIllegalArgumentException("query is empty");
+            throw new MvcSearchServiceIllegalArgumentException(QUERY_IS_EMPTY);
         }
         final List<String> queryTokens = parseService.parse(query);
         return this.tokenService.search(queryTokens);

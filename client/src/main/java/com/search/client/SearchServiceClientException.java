@@ -1,6 +1,8 @@
 package com.search.client;
 
-public class SearchServiceClientException extends RuntimeException {
+import com.search.service.SearchServiceException;
+
+public class SearchServiceClientException extends SearchServiceException {
 
     private final int code;
 
