@@ -5,9 +5,6 @@ package com.search.service;
  */
 public class SearchServiceException extends RuntimeException {
 
-    public SearchServiceException() {
-    }
-
     public SearchServiceException(final String message) {
         super(message);
     }
