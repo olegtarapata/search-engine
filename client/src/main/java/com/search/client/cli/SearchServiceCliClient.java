@@ -32,6 +32,7 @@ public class SearchServiceCliClient {
         if (args.length > 0) {
             if (args.length != 2) {
                 System.out.println("usage: <host> <port>");
+                return;
             }
             host = args[0];
             port = Integer.parseInt(args[1]);
@@ -40,7 +41,7 @@ public class SearchServiceCliClient {
     }
 
     public void handleInput() {
-        client.search(UUID.randomUUID().toString());
+        checkConnection();
         final Scanner scanner = new Scanner(System.in);
         writeUsage();
         while (true) {
@@ -89,6 +90,10 @@ public class SearchServiceCliClient {
                 System.out.println(e.getMessage());
             }
         }
+    }
+
+    private void checkConnection() {
+        client.search(UUID.randomUUID().toString());
     }
 
     private void writeUsage() {
